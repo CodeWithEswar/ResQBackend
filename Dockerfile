@@ -7,10 +7,21 @@ ENV PYTHONUNBUFFERED=1 \
     YOLO_CONFIG_DIR=/tmp/Ultralytics \
     PORT=8000
 
-# Install minimal OS dependencies for network operations & healthchecks
+# Install minimal OS dependencies for network operations, healthchecks, PyTorch, and OpenCV
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    libgl1 \
+    libglib2.0-0 \
+    libgomp1 \
+    libxcb1 \
+    libxcb-xinerama0 \
+    libxcb-cursor0 \
+    libx11-6 \
+    libxext6 \
+    libxrender1 \
+    libsm6 \
+    libice6 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -18,7 +29,9 @@ WORKDIR /app
 # Install Python dependencies first for optimal Docker layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    python -c "import cv2; print('OpenCV successfully loaded:', cv2.__version__)" && \
+    python -c "import torch; print('PyTorch successfully loaded:', torch.__version__)"
 
 # Copy application files, models, and artifacts
 COPY app/ ./app/

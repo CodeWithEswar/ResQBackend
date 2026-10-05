@@ -1,0 +1,8 @@
+{
+  "dataset": "WIDER FACE official validation",
+  "source": "https://huggingface.co/datasets/CUHK-CSE/wider_face",
+  "original_file": "48--Parachutist_Paratrooper/48_Parachutist_Paratrooper_Parachutist_Paratrooper_48_205.jpg",
+  "sha256": "fa2dd64027dd05daf9c6e6654bc1e9206353a9f94fca694fa85e9d9c1acf3e84",
+  "license": "CC-BY-NC-ND-4.0",
+  "purpose": "inference regression only; no identity accuracy claim"
+}

@@ -1,0 +1,1 @@
+{"name":"resq-database-validation","private":true,"type":"module","scripts":{"test:db":"node tests/database.test.mjs"},"devDependencies":{"@electric-sql/pglite":"^0.3.14"}}

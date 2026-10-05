@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "detector": {
+    "file": "resq-face-495d4fa74021.pt",
+    "sha256": "495d4fa740216ef91a29320c96f1cbc1351abb4f85e2b58ccb9d116fe0c0abf7",
+    "architecture": "YOLOv8n-face",
+    "source": "https://github.com/akanametov/yolo-face/releases/download/1.0.0/yolov8n-face.pt",
+    "dataset": "WIDER FACE",
+    "local_training": true,
+    "training": {
+      "created_at": "2026-10-04T20:11:36.369566+00:00",
+      "epochs_requested": 3,
+      "weights": "runs/wider-video-1024/weights/best.pt",
+      "weights_sha256": "495d4fa740216ef91a29320c96f1cbc1351abb4f85e2b58ccb9d116fe0c0abf7",
+      "initial_weights_sha256": "289b57fb99f00aa83b0157aac75e0af36e46ee4f3464b25761f3e05cdfe7735e",
+      "training_parameters": {
+        "lr": 1e-05,
+        "freeze": 10,
+        "batch": 8,
+        "imgsz": 640,
+        "seed": 42,
+        "warmup_epochs": 0
+      },
+      "dataset_manifest_sha256": "2e9bd0801eb77a56259232757be047f7f2b4f322a74f0b20aff0ee6b88ecbe8a",
+      "train_images": 1024,
+      "validation_images": 256,
+      "baseline": {
+        "precision": 0.8755596078624763,
+        "recall": 0.6207448938726472,
+        "map50": 0.6975872068269228,
+        "map50_95": 0.39263755243077436
+      },
+      "candidate": {
+        "precision": 0.8754616780926633,
+        "recall": 0.6243492190628754,
+        "map50": 0.6985880046368933,
+        "map50_95": 0.38896081550158
+      },
+      "promotion_gate_passed": true,
+      "disaster_validated": false,
+      "identity_accuracy_evaluated": false,
+      "scope": "WIDER FACE detection validation; no claim of disaster identification accuracy"
+    }
+  },
+  "recognizer": {
+    "file": "sface.onnx",
+    "sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79",
+    "model_id": "opencv-sface-2021dec-128",
+    "dimensions": 128
+  },
+  "landmarks": {
+    "file": "yunet.onnx",
+    "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
+  },
+  "thresholds": {
+    "face": 0.363
+  },
+  "calibration": {
+    "status": "lfw_research_calibrated",
+    "ear_recognition_enabled": false,
+    "evaluation": {
+      "created_at": "2026-10-05T07:25:20.035819+00:00",
+      "dataset": "LFW original photographs and official development pairs",
+      "detector_sha256": "495d4fa740216ef91a29320c96f1cbc1351abb4f85e2b58ccb9d116fe0c0abf7",
+      "recognizer_sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79",
+      "threshold": 0.363,
+      "target_calibration_far": 0.01,
+      "calibration": {
+        "genuine_pairs": 250,
+        "impostor_pairs": 250,
+        "true_accept_rate": 0.984,
+        "false_accept_rate": 0.0,
+        "false_accepts": 0,
+        "far_wilson_95_upper": 0.015133847249623387
+      },
+      "minimum_sface_reference_threshold": 0.363,
+      "face_selection": "LFW central portrait, using the scikit-learn evaluation region; equivalent to explicit app face selection",
+      "test": {
+        "genuine_pairs": 500,
+        "impostor_pairs": 499,
+        "true_accept_rate": 0.972,
+        "false_accept_rate": 0.0,
+        "false_accepts": 0,
+        "far_wilson_95_upper": 0.007639781593249245
+      },
+      "previous_threshold_test": {
+        "genuine_pairs": 500,
+        "impostor_pairs": 499,
+        "true_accept_rate": 0.972,
+        "false_accept_rate": 0.0,
+        "false_accepts": 0,
+        "far_wilson_95_upper": 0.007639781593249245
+      },
+      "subject_disjoint": true,
+      "train_pairs_attempted": 500,
+      "test_pairs_attempted": 1000,
+      "train_rejected": 0,
+      "test_rejected": 1,
+      "pair_files": {
+        "pairsDevTrain.txt": "1d454dada7dfeca0e7eab6f65dc4e97a6312d44cf142207be28d688be92aabfa",
+        "pairsDevTest.txt": "7cb06600ea8b2814ac26e946201cdb304296262aad67d046a16a7ec85d0ff87c"
+      },
+      "disaster_validated": false,
+      "limitations": "LFW research sample, not injured, deceased, occluded disaster victims; finite-sample FAR uncertainty. Rejected inputs count against coverage, not recognition denominators."
+    }
+  },
+  "quality": {
+    "min_face_pixels": 64,
+    "min_contrast": 0.04,
+    "min_brightness": 0.06,
+    "max_brightness": 0.96,
+    "min_laplacian_variance": 15
+  },
+  "deployment": {
+    "identity_confirmation": "independent_human_review",
+    "disaster_validated": false
+  }
+}

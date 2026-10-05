@@ -1,0 +1,35 @@
+# Local virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+tests/
+
+# Local runs, training data, and cache
+runs/
+data/
+work/
+Ultralytics/
+*.mp4
+*.webm
+*.avi
+*.mov
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Git
+.git/
+.gitignore
+
+# Local env files with secrets (set these in Vercel Project Settings instead)
+.env
+.env.local

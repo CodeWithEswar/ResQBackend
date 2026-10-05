@@ -1,0 +1,34 @@
+# Secrets & Environment variables
+.env
+.env.*
+!.env.example
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Dependencies & Local Packages
+node_modules/
+
+# Local database / Supabase temp
+supabase/.temp/
+
+# Training checkpoints, runs, and local datasets
+runs/
+work/
+data/
+Ultralytics/
+
+# Temporary media files
+*.mp4
+*.webm
+*.avi
+*.mov

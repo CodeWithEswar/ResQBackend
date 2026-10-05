@@ -30,7 +30,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
-    python -c "import cv2; print('OpenCV successfully loaded:', cv2.__version__)" && \
+    python -c "import cv2; _ = cv2.HOGDescriptor(); print('OpenCV', cv2.__version__, 'and HOGDescriptor OK')" && \
     python -c "import torch; print('PyTorch successfully loaded:', torch.__version__)"
 
 # Copy application files, models, and artifacts

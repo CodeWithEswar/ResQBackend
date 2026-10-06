@@ -226,7 +226,7 @@ async def stream_faces(socket:WebSocket,gw=Depends(gateway)):
     # Allow that exact origin as well as configured browser origins, never every
     # LAN host or an arbitrary Origin supplied by a cross-origin browser page.
     endpoint_origin=str(socket.url.replace(scheme='https' if socket.url.scheme=='wss' else 'http',path='',query='',fragment=''))
-    if origin and origin!=endpoint_origin and origin not in settings.cors:
+    if origin and origin!=endpoint_origin and '*' not in settings.cors and origin not in settings.cors:
         await socket.close(code=1008,reason='Origin is not allowed.')
         return
     await socket.accept()

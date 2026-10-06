@@ -25,7 +25,7 @@ class Settings:
     inference_queue_seconds: float=field(default_factory=lambda:float(os.getenv('INFERENCE_QUEUE_SECONDS','10')))
     # HTTP and WebSocket origins use the same explicit list. A literal wildcard
     # cannot be matched by the live origin check and must not widen HTTP access.
-    cors: list[str]=field(default_factory=lambda:[s.strip() for s in os.getenv('CORS_ORIGINS','http://localhost:8081,http://127.0.0.1:8081').split(',') if s.strip() and s.strip()!='*'])
+    cors: list[str]=field(default_factory=lambda:[s.strip() for s in os.getenv('CORS_ORIGINS','http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001,http://localhost:8081,http://127.0.0.1:8081,https://resqid.vercel.app').split(',') if s.strip()])
 
     @property
     def configured(self):

@@ -76,7 +76,7 @@ def update_cors_lan_ip(lan_ip: str):
                 if line.startswith("CORS_ORIGINS="):
                     # Add only local preview origins, without widening to every website.
                     origins = [o.strip() for o in line.split("=", 1)[1].split(",") if o.strip()]
-                    for allowed in [f"http://{lan_ip}:8081", f"http://{lan_ip}:8082", f"http://{lan_ip}:19006", "http://localhost:8081", "http://localhost:8082", "http://127.0.0.1:8081", "http://127.0.0.1:8082"]:
+                    for allowed in [f"http://{lan_ip}:3000", f"http://{lan_ip}:3001", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001", f"http://{lan_ip}:8081", f"http://{lan_ip}:8082", f"http://{lan_ip}:19006", "http://localhost:8081", "http://localhost:8082", "http://127.0.0.1:8081", "http://127.0.0.1:8082"]:
                         if allowed not in origins:
                             origins.append(allowed)
                     new_lines.append("CORS_ORIGINS=" + ",".join(origins))

@@ -16,7 +16,7 @@ class Settings:
     max_pixels: int=field(default_factory=lambda:int(os.getenv('MAX_IMAGE_PIXELS','20000000')))
     max_video_bytes: int=field(default_factory=lambda:int(os.getenv('MAX_VIDEO_BYTES','52428800')))
     max_video_seconds: float=field(default_factory=lambda:float(os.getenv('MAX_VIDEO_SECONDS','60')))
-    video_processing_seconds: float=field(default_factory=lambda:float(os.getenv('VIDEO_PROCESSING_SECONDS','45')))
+    video_processing_seconds: float=field(default_factory=lambda:float(os.getenv('VIDEO_PROCESSING_SECONDS','90')))
     redis_url: str=field(default_factory=lambda:os.getenv('REDIS_URL','redis://127.0.0.1:6379/0'))
     live_interval_ms: int=field(default_factory=lambda:max(250,int(os.getenv('LIVE_INTERVAL_MS','1000'))))
     live_frame_bytes: int=field(default_factory=lambda:int(os.getenv('MAX_LIVE_FRAME_BYTES','2097152')))

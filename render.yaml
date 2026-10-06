@@ -21,13 +21,17 @@ services:
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+      - key: LIVE_MEMORY_FALLBACK
+        value: "1"
+      - key: VIDEO_PROCESSING_SECONDS
+        value: "90"
       - key: REDIS_URL
         fromService:
-          type: redis
+          type: keyvalue
           name: resq-redis
           property: connectionString
 
-  - type: redis
+  - type: keyvalue
     name: resq-redis
     plan: free
     region: oregon

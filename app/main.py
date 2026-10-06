@@ -32,7 +32,8 @@ async def lifespan(app):
         app.state.model_reload_lock=asyncio.Lock()
         app.state.inference_slots=asyncio.BoundedSemaphore(settings.inference_concurrency)
         app.state.live_sessions=LiveSessions(settings.redis_url,settings.live_interval_ms)
-        if not await app.state.live_sessions.available():log.warning('Redis is unavailable; live detection is disabled until it reconnects.')
+        if not await app.state.live_sessions.available():log.warning('Live session coordination is unavailable.')
+        elif not app.state.live_sessions.is_redis:log.info('Redis is unavailable; running live session coordination with in-memory fallback.')
         try:yield
         finally:await app.state.live_sessions.close()
 
@@ -180,17 +181,19 @@ async def health(request:Request,engine=Depends(model_engine)):
     if sessions is None:
         sessions = LiveSessions(settings.redis_url, settings.live_interval_ms)
         request.app.state.live_sessions = sessions
-    redis_connected=await sessions.available()
+    redis_connected=await sessions.is_redis_available()
+    live_ready=await sessions.available()
     return {'service':'ResQ model API','supabase_configured':settings.configured,'models':MODEL_IDS,
             'detector':bundle['detector']['architecture'],'detector_sha256':bundle['detector']['sha256'],
             'local_training':bundle['detector']['local_training'],'ready':True,
             'ear_recognition_enabled':False,'disaster_validated':bundle['deployment']['disaster_validated'],
             'calibration':bundle['calibration']['status'],'scope':'human-reviewed candidate assistance',
             'api_version':app.version,'capabilities':['image_detection','video_detection','live_websocket_detection','selected_face_search'],
-            'redis_connected':redis_connected,'live_ready':redis_connected,
+            'redis_connected':redis_connected,'live_ready':live_ready,
+            'live_coordination':sessions.coordination,
             'limits':{'image_bytes':settings.max_bytes,'image_pixels':settings.max_pixels,'video_bytes':settings.max_video_bytes,
                       'video_seconds':settings.max_video_seconds,'video_sample_frames':60,'video_returned_frames':12},
-            'live_transport':'WebSocket /api/faces/stream; Redis session leases and frame pacing',
+            'live_transport':f"WebSocket /api/faces/stream; {sessions.coordination.capitalize()} session leases and frame pacing",
             'live_interval_ms':settings.live_interval_ms}
 
 @app.post('/api/faces/detect',response_model=DetectionResult,tags=['Face detection'])
@@ -257,7 +260,7 @@ async def stream_faces(socket:WebSocket,gw=Depends(gateway)):
         await model_engine(socket)
         await socket.send_json({'type':'ready','session_id':session_id,'min_interval_ms':settings.live_interval_ms,
                                 'max_frame_bytes':settings.live_frame_bytes,'session_seconds':settings.live_session_seconds,
-                                'transport':'websocket','coordination':'redis'})
+                                'transport':'websocket','coordination':sessions.coordination})
         started=time.monotonic();last_auth=started
         while time.monotonic()-started < settings.live_session_seconds:
             message=await asyncio.wait_for(socket.receive(),timeout=30)

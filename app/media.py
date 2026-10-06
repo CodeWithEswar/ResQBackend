@@ -178,8 +178,12 @@ def detect_video(upload, engine, limits, interval_seconds, max_frames, result_li
             warnings = []
             if requested > sample_count:
                 warnings.append('Sampling was spread across the clip to stay within the frame limit. Brief appearances between samples can be missed.')
+            sampled_indices = []
             for index in indices:
                 if time.monotonic() - started > limits.video_processing_seconds:
+                    if frames:
+                        warnings.append('Video processing reached the time limit. Returning the clearest face frames analyzed so far.')
+                        break
                     raise HTTPException(503, 'Video analysis exceeded the processing limit. Trim the clip or analyze fewer frames.', headers={'Retry-After': '3'})
                 if not cap.set(cv2.CAP_PROP_POS_FRAMES, int(index)):
                     raise HTTPException(422, 'This video does not support reliable frame seeking. Export a fresh MP4 and try again.')
@@ -188,17 +192,15 @@ def detect_video(upload, engine, limits, interval_seconds, max_frames, result_li
                     raise HTTPException(422, 'A video frame could not be decoded. Export a fresh MP4 and try again.')
                 if image.shape[0] * image.shape[1] > limits.max_pixels:
                     raise HTTPException(413, 'Video frame dimensions exceed the allowed image limit.')
+                sampled_indices.append(int(index))
                 image = resize_frame(image)
-                # Detect the exact JPEG returned for selection and subsequent
-                # search, so a client never searches the painted bounding boxes.
-                encoded = jpeg_uri(image)
-                image = cv2.imdecode(np.frombuffer(base64.b64decode(encoded.split(',', 1)[1]), np.uint8), cv2.IMREAD_COLOR)
                 detected = detect_frame(image, engine, include_frame=False)
                 if detected['faces']:
                     with_faces += 1
                     usable = [face for face in detected['faces'] if face['usable']]
                     score = (bool(usable), max(face['quality']['laplacian_variance'] for face in usable or detected['faces']))
                     if len(frames) < result_limit or score > min(frame['_score'] for frame in frames):
+                        encoded = jpeg_uri(image)
                         detected['frame'] = preview_frame(image, detected['faces'])
                         detected['frame']['image'] = encoded
                         detected.update(frame_index=int(index), timestamp_seconds=round(int(index) / fps, 3), _score=score)
@@ -208,9 +210,10 @@ def detect_video(upload, engine, limits, interval_seconds, max_frames, result_li
             frames.sort(key=lambda frame: frame['frame_index'])
             for frame in frames:
                 frame.pop('_score')
-            effective_interval = (int(indices[-1]) - int(indices[0])) / fps / (len(indices) - 1) if len(indices) > 1 else 0
+            final_indices = sampled_indices if sampled_indices else indices
+            effective_interval = (int(final_indices[-1]) - int(final_indices[0])) / fps / (len(final_indices) - 1) if len(final_indices) > 1 else 0
             return {'duration_seconds': round(duration, 3), 'fps': fps, 'total_frames': total_frames,
-                    'sampled_frames': len(indices), 'frames_with_faces': with_faces, 'frames': frames,
+                    'sampled_frames': len(final_indices), 'frames_with_faces': with_faces, 'frames': frames,
                     'sampling_interval_seconds': round(effective_interval, 3),
                     'detector': engine.bundle['detector']['architecture'], 'detector_version': engine.bundle['detector']['sha256'],
                     'processing_ms': round((time.monotonic() - started) * 1000),
